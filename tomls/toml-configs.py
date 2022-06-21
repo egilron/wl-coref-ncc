@@ -9,17 +9,18 @@ import os
 
 
 # %%
-source = "/home/egil/gits_wsl/wl-coref-ncc/config.toml"
-toml_folder = "/home/egil/gits_wsl/wl-coref-ncc/tomls"
-train_path = "/home/egil/gits_wsl/ncc/wl-ncc_heads/wl-ncc_train_head.jsonl"
-runpath = "/home/egil/gits_wsl/wl-coref-ncc/run.py"
+source = "/fp/homes01/u01/ec-egilron/wl-coref-ncc/config.toml"
+toml_folder = "/fp/homes01/u01/ec-egilron/wl-coref-ncc/tomls"
+train_path = "/fp/homes01/u01/ec-egilron/ncc/wl-ncc_heads/wl-ncc_train_head.jsonl"
+runpath = "/fp/homes01/u01/ec-egilron/wl-coref-ncc/run.py"
+fox_slurm_base = "/fp/homes01/u01/ec-egilron/wl-coref-ncc/tomls/fox_base.slurm"
 
 with open(source) as rf:
     base_toml ={'DEFAULT': toml.loads(rf.read())['DEFAULT']}
 
 defaults = base_toml['DEFAULT']
-for key, value in defaults.items():
-    print(key,":\t", value)
+# for key, value in defaults.items():
+#     print(key,":\t", value)
 
 
 
@@ -28,11 +29,11 @@ for key, value in defaults.items():
 # ## Changes from the default that is shared by all experiments go here
 
 # %%
-run_id = "models01"
+run_id = "models02"
 
-defaults["device"] = "cpu"
-defaults["bert_finetune"] = False
-defaults["train_epochs"] = 2
+defaults["device"] = "cuda:0"
+defaults["bert_finetune"] = True
+defaults["train_epochs"] = 20
 defaults["train_data"] = train_path
 defaults["dev_data"] = train_path.replace("train", "development")
 defaults["test_data"] = train_path.replace("train", "test")
@@ -50,7 +51,8 @@ if not os.path.exists(out_folder):
 # Start without any grid, list only
 
 # %%
-alternatives = {"bert_models": ["xlm-roberta-base", "bert-base-multilingual-cased","/home/egil/datasets/norbert2", "/home/egil/datasets/nb-bert-base",]}
+alternatives = {"bert_models": ["/fp/homes01/u01/ec-egilron/norbert2", "xlm-roberta-base", "bert-base-multilingual-cased", "/fp/homes01/u01/ec-egilron/nb-bert-base"]}
+alternatives = {"bert_models": ["/fp/homes01/u01/ec-egilron/transformers/nb-bert-base",  "xlm-roberta-base"]}
 exp_ids = []
 out_toml = {'DEFAULT': defaults}
 for key, alts in alternatives.items():
@@ -62,6 +64,29 @@ for key, alts in alternatives.items():
 out_toml_path = os.path.join(toml_folder, run_id+".toml")
 with open(out_toml_path, "w") as wf:
     toml.dump(out_toml, wf)
+
+def check_models(m_list):
+
+    from transformers import AutoModel
+    for model in m_list:
+        print("Checking model:", model)
+        if model[0] == "/":
+            try:
+                m = AutoModel.from_pretrained(model, local_files_only=True).to("cpu")
+                print("success load local")
+            except (OSError, ValueError) as e:
+                print("failure load local", model)
+                print(e)
+        
+        else:
+            try:
+                m = AutoModel.from_pretrained(model).to("cpu")
+                print("success", model)
+            except OSError as e:
+                print("failure", model)
+        # print(e, "\n")
+
+# check_models(alternatives["bert_models"])
 
 
 # %% [markdown]
@@ -75,6 +100,7 @@ with open(out_toml_path, "w") as wf:
 
 
 script_path = os.path.join(toml_folder, run_id+".sh")
+fox_slurm_path = os.path.join(toml_folder, run_id+"_fox.slurm")
 scriptlines  = ["#!/bin/sh"]
 for exp in exp_ids:
     scriptlines.append(" ".join(["python", runpath, "train", exp, "--config-file", out_toml_path]))
@@ -82,8 +108,19 @@ for exp in exp_ids:
 with open (script_path, "w") as wf:
     wf.write("\n".join(scriptlines))
 print(script_path)
-print(runpath)
+
+# print(runpath)
 print("\n".join(scriptlines))
+
+fox = True
+if fox:
+    print(fox_slurm_path )
+    with open(fox_slurm_base) as rf:
+        base = rf.read()
+        with open (fox_slurm_path, "w") as wf:
+            out_file = base+"\n"+"\n".join(scriptlines[1:])
+            wf.write(out_file) 
+
 
 
 # %%
