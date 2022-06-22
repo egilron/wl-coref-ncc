@@ -327,7 +327,7 @@ class CorefModel:  # pylint: disable=too-many-instance-attributes
             remaining_epochs = self.config.train_epochs - self.epochs_trained
             if remaining_epochs < 4 or  remaining_epochs % 4 == 0:
                 self.save_weights()
-                self.evaluate()
+            self.evaluate()
 
 
 

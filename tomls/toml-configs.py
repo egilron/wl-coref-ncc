@@ -29,11 +29,15 @@ defaults = base_toml['DEFAULT']
 # ## Changes from the default that is shared by all experiments go here
 
 # %%
-run_id = "models02"
 
+# models03: Iterate batch size for memory iussues. 4 epochs.
+
+run_id = "models03"
+
+defaults["bert_model"] = "/fp/homes01/u01/ec-egilron/transformers/nb-bert-base"
 defaults["device"] = "cuda:0"
 defaults["bert_finetune"] = True
-defaults["train_epochs"] = 20
+defaults["train_epochs"] = 4
 defaults["train_data"] = train_path
 defaults["dev_data"] = train_path.replace("train", "development")
 defaults["test_data"] = train_path.replace("train", "test")
@@ -51,12 +55,12 @@ if not os.path.exists(out_folder):
 # Start without any grid, list only
 
 # %%
-alternatives = {"bert_models": ["/fp/homes01/u01/ec-egilron/norbert2", "xlm-roberta-base", "bert-base-multilingual-cased", "/fp/homes01/u01/ec-egilron/nb-bert-base"]}
-alternatives = {"bert_models": ["/fp/homes01/u01/ec-egilron/transformers/nb-bert-base",  "xlm-roberta-base"]}
+# alternatives = {"bert_models": ["/fp/homes01/u01/ec-egilron/norbert2", "xlm-roberta-base", "bert-base-multilingual-cased", "/fp/homes01/u01/ec-egilron/nb-bert-base"]}
+# alternatives = {"bert_models": ["/fp/homes01/u01/ec-egilron/transformers/nb-bert-base",  "xlm-roberta-base"]}
+alternatives = {"a_scoring_batch_size": [1,2,4,8,16,32,64,128,254]}
 exp_ids = []
 out_toml = {'DEFAULT': defaults}
-for key, alts in alternatives.items():
-    param_name = key[:-1] # Always add s also when s from before
+for param_name, alts in alternatives.items():
     for idx, alt in enumerate(alts):
         experiment_id = run_id+"_"+str(idx).zfill(3)
         out_toml[experiment_id] = {param_name: alt}
@@ -103,14 +107,16 @@ script_path = os.path.join(toml_folder, run_id+".sh")
 fox_slurm_path = os.path.join(toml_folder, run_id+"_fox.slurm")
 scriptlines  = ["#!/bin/sh"]
 for exp in exp_ids:
+    scriptlines.append(f'echo "Starting experiment {exp}" ')
     scriptlines.append(" ".join(["python", runpath, "train", exp, "--config-file", out_toml_path]))
+
 
 with open (script_path, "w") as wf:
     wf.write("\n".join(scriptlines))
 print(script_path)
 
 # print(runpath)
-print("\n".join(scriptlines))
+# print("\n".join(scriptlines))
 
 fox = True
 if fox:
