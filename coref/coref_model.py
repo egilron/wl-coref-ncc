@@ -327,7 +327,13 @@ class CorefModel:  # pylint: disable=too-many-instance-attributes
             remaining_epochs = self.config.train_epochs - self.epochs_trained
             if remaining_epochs < 4 or  remaining_epochs % 4 == 0:
                 self.save_weights()
-            self.evaluate()
+
+                saved_weights = [os.path.join(self.config.data_dir, f) for f in os.listdir(self.config.data_dir) if f.endswith(".pt")]
+                saved_weights.sort(key=os.path.getmtime)
+                for to_delete in saved_weights[:-4]:
+                    os.remove(to_delete)
+
+                self.evaluate()
 
 
 

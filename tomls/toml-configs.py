@@ -32,12 +32,12 @@ defaults = base_toml['DEFAULT']
 
 # models03: Iterate batch size for memory iussues. 4 epochs.
 
-run_id = "models03"
+run_id = "dropout02"
 
 defaults["bert_model"] = "/fp/homes01/u01/ec-egilron/transformers/nb-bert-base"
 defaults["device"] = "cuda:0"
 defaults["bert_finetune"] = True
-defaults["train_epochs"] = 4
+defaults["train_epochs"] = 20
 defaults["train_data"] = train_path
 defaults["dev_data"] = train_path.replace("train", "development")
 defaults["test_data"] = train_path.replace("train", "test")
@@ -57,7 +57,7 @@ if not os.path.exists(out_folder):
 # %%
 # alternatives = {"bert_models": ["/fp/homes01/u01/ec-egilron/norbert2", "xlm-roberta-base", "bert-base-multilingual-cased", "/fp/homes01/u01/ec-egilron/nb-bert-base"]}
 # alternatives = {"bert_models": ["/fp/homes01/u01/ec-egilron/transformers/nb-bert-base",  "xlm-roberta-base"]}
-alternatives = {"a_scoring_batch_size": [1,2,4,8,16,32,64,128,254]}
+alternatives = {"dropout_rate": [0.2, 0.25, 0.3]}
 exp_ids = []
 out_toml = {'DEFAULT': defaults}
 for param_name, alts in alternatives.items():
@@ -111,9 +111,7 @@ for exp in exp_ids:
     scriptlines.append(" ".join(["python", runpath, "train", exp, "--config-file", out_toml_path]))
 
 
-with open (script_path, "w") as wf:
-    wf.write("\n".join(scriptlines))
-print(script_path)
+
 
 # print(runpath)
 # print("\n".join(scriptlines))
@@ -127,7 +125,10 @@ if fox:
             out_file = base+"\n"+"\n".join(scriptlines[1:])
             wf.write(out_file) 
 
-
+else:
+    with open (script_path, "w") as wf:
+        wf.write("\n".join(scriptlines))
+    print(script_path)
 
 # %%
 # sudo apt-get install git-lfs
