@@ -3,5 +3,5 @@ toml
 transformers==3.2.0
 
 -f https://download.pytorch.org/whl/torch_stable.html
-torch==1.4.0
+torch==1.6
 torchvision==0.5.0
