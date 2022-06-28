@@ -32,8 +32,8 @@ defaults = base_toml['DEFAULT']
 
 # models03: Iterate batch size for memory iussues. 4 epochs.
 
-run_id = "rough_k01"
-defaults["rough_k"] = 5
+run_id = "models04"
+defaults["rough_k"] = 50
 
 defaults["bert_model"] = "/fp/homes01/u01/ec-egilron/transformers/nb-bert-base"
 defaults["device"] = "cuda:0"
@@ -58,7 +58,7 @@ if not os.path.exists(out_folder):
 # %%
 # alternatives = {"bert_models": ["/fp/homes01/u01/ec-egilron/norbert2", "xlm-roberta-base", "bert-base-multilingual-cased", "/fp/homes01/u01/ec-egilron/nb-bert-base"]}
 # alternatives = {"bert_models": ["/fp/homes01/u01/ec-egilron/transformers/nb-bert-base",  "xlm-roberta-base"]}
-alternatives = {"rough_k": [5,10,20,40,50,60]}
+alternatives = {"bert_model": ["/fp/homes01/u01/ec-egilron/transformers/nb-bert-base", "/fp/homes01/u01/ec-egilron/transformers/221", "xlm-roberta-base", "bert-base-multilingual-cased" ]}
 exp_ids = []
 out_toml = {'DEFAULT': defaults}
 for param_name, alts in alternatives.items():
