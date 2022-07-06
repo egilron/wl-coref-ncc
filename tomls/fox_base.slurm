@@ -4,7 +4,7 @@
 #SBATCH --account=ec30
 #SBATCH --partition=accel    # To use the accelerator nodes
 #SBATCH --gpus=a100:1
-#SBATCH --time=1:00:00      # Max walltime is 14 days.
+#SBATCH --time=1:30:00      # Max walltime is 14 days.
 #SBATCH --mem-per-cpu=32G
 #SBATCH --nodes=1
 
