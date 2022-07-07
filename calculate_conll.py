@@ -14,19 +14,12 @@ def extract_f1(proc: subprocess.CompletedProcess) -> float:
         curr_line = line
     return float(re.search(r"F1:\s*([0-9.]+)%", prev_line).group(1))
 
-
+# Tampered with by Egil. Check original wl-coref if you need that
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Get conll score")
-    parser.add_argument("section", help="The name of the experiment.")
-    parser.add_argument("data_split", choices=("train", "dev", "test"))
-    parser.add_argument("epoch", type=int)
-    parser.add_argument("--log-dir", default="data/conll_logs")
-    args = parser.parse_args()
 
-    filename_prefix = f"{args.section}_{args.data_split}_e{args.epoch}"
 
-    gold = os.path.join(args.log_dir, f"{filename_prefix}.gold.conll")
-    pred = os.path.join(args.log_dir, f"{filename_prefix}.pred.conll")
+    gold = "/fp/homes01/u01/ec-egilron/narc-baseline/experiments/tomls/POC5/conll_logs/POC5-norBERT2_dev_e20.gold.conll"
+    pred = "/fp/homes01/u01/ec-egilron/narc-baseline/experiments/tomls/POC5/conll_logs/POC5-norBERT2_dev_e20.pred.conll"
 
     part_a = ["perl", "reference-coreference-scorers/scorer.pl"]
     part_b = [gold, pred]
