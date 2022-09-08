@@ -1,3 +1,9 @@
+## Word-Level Coreference Resolution for the Norwegian Anaphora Resolution Corpus
+This fork is an adaption of wl-coref in order to model Norwegian coreference data.  
+
+The following is the original [wl-coref readme](https://github.com/vdobrovolskii/wl-coref). It may of may not be relevant for modelling the NARC data.
+See [this repo](https://github.com/egilron/narc-baseline) for instructions on how to use this repository.
+
 ## Word-Level Coreference Resolution
 
 This is a repository with the code to reproduce the experiments described in the paper of the same name, which was accepted to EMNLP 2021. The paper is available [here](https://aclanthology.org/2021.emnlp-main.605/).
