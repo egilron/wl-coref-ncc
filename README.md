@@ -2,7 +2,7 @@
 This fork is an adaption of wl-coref in order to model Norwegian coreference data.  
 
 The following is the original [wl-coref readme](https://github.com/vdobrovolskii/wl-coref). It may of may not be relevant for modelling the NARC data.
-See [this repo](https://github.com/egilron/narc-baseline) for instructions on how to use this repository on the NOrwegian data.
+See [this repo](https://github.com/egilron/narc-baseline) for instructions on how to use this repository on the Norwegian data.
 
 ## Word-Level Coreference Resolution
 
